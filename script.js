@@ -1,29 +1,32 @@
-document.getElementById('getDogBtn').addEventListener('click', function() {
-    const url = 'https://api.thedogapi.com/v1/images/search';
+document.addEventListener('DOMContentLoaded', function() {
+    const apiKey = 'gX5r0HCSo0vWIYsuK1fuW2Bj8HQmaQAfh96o48gM'; 
+    const url = `https://api.nasa.gov/planetary/apod?api_key=${apiKey}`;
 
-    function getDogImage() {
+    function fetchAPOD() {
         return new Promise((resolve, reject) => {
             fetch(url)
                 .then(response => {
                     if (!response.ok) {
-                        reject('Error fetching dog image');
+                        reject('Error fetching data from NASA API');
                     }
                     return response.json();
                 })
-                .then(data => {
-                    resolve(data[0].url);
-                })
-                .catch(error => {
-                    reject(error);
-                });
+                .then(data => resolve(data))
+                .catch(error => reject(error));
         });
     }
 
-    getDogImage()
-        .then(imageUrl => {
-            document.getElementById('dogImage').src = imageUrl;
+    fetchAPOD()
+        .then(data => {
+            const content = document.getElementById('content');
+            content.innerHTML = `
+                <h3>${data.title}</h3>
+                <img src="${data.url}" alt="${data.title}">
+                <p>${data.explanation}</p>
+            `;
         })
         .catch(error => {
-            console.error(error);
+            const content = document.getElementById('content');
+            content.innerHTML = `<p>${error}</p>`;
         });
 });
